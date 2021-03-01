@@ -9,6 +9,7 @@ import (
 
 type PackageInfo struct {
 	Epoch           int
+	InstallTime	int
 	Name            string
 	Version         string
 	Release         string
@@ -46,6 +47,17 @@ func getNEVRA(indexEntries []indexEntry) (*PackageInfo, error) {
 				return nil, xerrors.Errorf("failed to read binary (epoch): %w", err)
 			}
 			pkgInfo.Epoch = int(epoch)
+		case RPMTAG_INSTALLTIME:
+			if indexEntry.Info.Type != RPM_INT32_TYPE {
+				return nil, xerrors.New("invalid tag installtime")
+			}
+
+			var installtime int32
+			reader := bytes.NewReader(indexEntry.Data)
+			if err := binary.Read(reader, binary.BigEndian, &installtime); err != nil {
+				return nil, xerrors.Errorf("failed to read binary (installtime): %w", err)
+			}
+			pkgInfo.InstallTime = int(installtime)
 		case RPMTAG_VERSION:
 			if indexEntry.Info.Type != RPM_STRING_TYPE {
 				return nil, xerrors.New("invalid tag version")
