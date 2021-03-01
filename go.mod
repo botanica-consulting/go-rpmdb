@@ -1,4 +1,4 @@
-module github.com/knqyf263/go-rpmdb
+module github.com/botanica-consulting/go-rpmdb
 
 go 1.14
 
